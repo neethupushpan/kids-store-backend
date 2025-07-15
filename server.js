@@ -19,12 +19,23 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ✅ CORS setup (now dynamic from .env)
-app.use(
-  cors({
-    origin: 'http://localhost:5190', // 👈 Match your frontend port
-    credentials: true,               // 👈 Required to send cookies
-  })
-);
+const allowedOrigins = [
+  'https://kids-store-frontend.vercel.app',
+  'https://kids-store-frontend-23xqtdxpc-neethu-pushpans-projects.vercel.app',
+  'http://localhost:5190'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
+  credentials: true,
+}));
+
 
 
 // ✅ Middlewares
