@@ -2,7 +2,10 @@ const jwt = require("jsonwebtoken");
 
 const authSeller = (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    // ✅ Get token from cookie OR Authorization header
+    const token =
+      req.cookies.token ||
+      (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
     if (!token) {
       return res.status(401).json({ message: "No token. User not authorized." });
@@ -14,11 +17,11 @@ const authSeller = (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    if (decodedToken.role !== 'seller' && decodedToken.role !== 'admin') {
+    if (decodedToken.role !== "seller" && decodedToken.role !== "admin") {
       return res.status(403).json({ message: "Access denied. Sellers or admins only." });
     }
 
-    req.user = {_id: decodedToken.id, role: decodedToken.role }; // ✅ updated
+    req.user = { _id: decodedToken.id, role: decodedToken.role };
     next();
   } catch (error) {
     console.error("Auth error:", error.message);
